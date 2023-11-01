@@ -20,9 +20,9 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        res.append("Dimension: " + dimension + "\n");
+        res.append("Dimension: ").append(dimension).append("\n");
         for(Entity entity: entities.values()) 
-            res.append(entity.printEntity() + " | ");
+            res.append(entity.printEntity()).append(" | ");
         return res.toString();
     }
 }

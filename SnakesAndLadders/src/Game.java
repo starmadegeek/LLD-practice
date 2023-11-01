@@ -57,8 +57,8 @@ public class Game {
         StringBuilder res = new StringBuilder();
         res.append(board.toString());
         res.append("\n");
-        for(Player player: players) res.append(" Player: " + player.getName() + "\n");
-        for(Player player: winners) res.append(" Winner: " + player.getName() + "\n");
+        for(Player player: players) res.append(" Player: ").append(player.getName()).append("\n");
+        for(Player player: winners) res.append(" Winner: ").append(player.getName()).append("\n");
         return res.toString();
     }
 

@@ -35,8 +35,8 @@ public class App {
         game.addPlayer(player2);
         game.addPlayer(player3);
 
-        System.out.println(game.toString());
+        System.out.println(game);
         game.startGame();
-        System.out.println(game.toString());
+        System.out.println(game);
     }
 }

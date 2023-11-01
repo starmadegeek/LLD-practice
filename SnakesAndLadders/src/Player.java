@@ -1,6 +1,6 @@
 public class Player {
     private int position;
-    private String name;
+    private final String name;
 
     public Player(String name){
         this.position = 0;
