@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ECommerce/ECommerce.iml" filepath="$PROJECT_DIR$/ECommerce/ECommerce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ParkingLot/ParkingLot.iml" filepath="$PROJECT_DIR$/ParkingLot/ParkingLot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SnakesAndLadders/SnakesAndLadders.iml" filepath="$PROJECT_DIR$/SnakesAndLadders/SnakesAndLadders.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Splitwise/Splitwise.iml" filepath="$PROJECT_DIR$/Splitwise/Splitwise.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TikTacToeGame/TikTacToeGame.iml" filepath="$PROJECT_DIR$/TikTacToeGame/TikTacToeGame.iml" />
+    </modules>
+  </component>
+</project>
