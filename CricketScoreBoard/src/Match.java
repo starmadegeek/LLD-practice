@@ -30,7 +30,7 @@ public class Match {
     public void start(){
         this.gameStatus = GameStatus.IN_PROGRESS;
         teamAInnings = new Innings(teamA, overs);
-        teamBInnings.start();
+        teamAInnings.start();
         teamBInnings = new Innings(teamB, overs);
         teamBInnings.start();
         if(teamBInnings.getFinalScore() > teamAInnings.getFinalScore()){
@@ -39,6 +39,5 @@ public class Match {
             result = "Result: Game is drawn due to tie";
         }
         else result = "Result: Team 1 won the match by " + (teamAInnings.getFinalScore()  - teamBInnings.getFinalScore()) + " runs";
-
     }
 }

@@ -16,21 +16,25 @@ public class Main {
 
         System.out.println("Enter number of overs to be bowled: ");
         int overs = scanner.nextInt();
+        scanner.nextLine();
 
-        System.out.println("\nEnter team 1 batting order");
+        System.out.println("Enter team 1 batting order");
         for (int i = 0; i < numPlayers; i++) {
-            team1.add(new Player(scanner.nextLine()));
+            team1.add(new Player(scanner.nextLine() + "t1"));
         }
 
-        System.out.println("\nEnter team 1 batting order");
+        System.out.println("Team 1: " + team1);
+
+        System.out.println("\nEnter team 2 batting order");
         for (int i = 0; i < numPlayers; i++) {
-            team2.add(new Player(scanner.nextLine()));
+            team2.add(new Player(scanner.nextLine() + "t2"));
         }
+        System.out.println("Team 2: " + team2);
 
         Team teamA = new Team(team1);
         Team teamB = new Team(team2);
         Match match = new Match(teamA, teamB, overs);
         match.start();
-
+        System.out.println(match.getResult());
     }
 }
