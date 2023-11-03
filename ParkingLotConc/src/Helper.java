@@ -8,7 +8,7 @@ public class Helper {
     }
 
     String getSpotId(int floor, int row, int column) {
-        return "" + floor + "-" + row + "-" + column;
+        return floor + "-" + row + "-" + column;
     }
 
     Integer[] getSpotLocation(String spotId) {
