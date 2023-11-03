@@ -1,0 +1,290 @@
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+interface Q001ParkingLotInterface {
+    void init(Helper01 helper, String[][][] parking);
+
+    ParkingResult park(int vehicleType, String vehicleNumber, String ticketId);
+
+    int removeVehicle(String spotId, String vehicleNumber, String ticketId);
+
+    ParkingResult searchVehicle(String spotId, String vehicleNumber, String ticketId);
+
+    int getFreeSpotsCount(int floor, int vehicleType);
+}
+
+// uncomment below code in case you are using your local ide and
+// comment it back again back when you are pasting completed solution in the online CodeZym editor
+// this will help avoid unwanted compilation errors and get method autocomplete in your local code editor.
+
+public class Solution implements Q001ParkingLotInterface {
+    private Helper01 helper;
+    private String[][][] parking;
+    private ParkingFloor[] floors;
+    private SearchManager searchManager;
+
+    public Solution() {
+    }
+
+    /**
+     * - use helper.print() and helper.println() for logging
+     * normal System.out.println() logs won't appear
+     * - parking[2][8][15] = parking spot at 2nd floor , 8th row and 15th column (0 based index),
+     * its spotId will be: "2-8-15"
+     */
+    public void init(Helper01 helper, String[][][] parking) {
+        this.helper = helper;
+        this.parking = parking;
+//        this.floors = parking.length;
+        // add more initializations code here as you require
+        this.floors = new ParkingFloor[parking.length];
+        for (int i = 0; i < parking.length; i++) {
+            this.floors[i] = new ParkingFloor(i, parking[i]);
+        }
+        this.searchManager = new SearchManager();
+        // helper.println("parking lot initialized");
+    }
+
+    /**
+     * ParkingResult status 201 for success, 404 for error
+     * vehicleType = 2 or 4 for 2-wheeler or 4-wheeler vehicle
+     */
+    public ParkingResult park(int vehicleType, String vehicleNumber, String ticketId) {
+        // use spotId=  helper.getSpotId(floor, row, column); to build spotId
+        // or just do spotId = ""+floor+"-"+row+"-"+column
+        if ((vehicleType != 2 && vehicleType != 4) || vehicleNumber.isBlank() || ticketId.isBlank())
+            return new ParkingResult(404, "", vehicleNumber, ticketId);
+        for (ParkingFloor floor : floors) {
+            ParkingResult result = floor.park(vehicleType, vehicleNumber, ticketId);
+            if (result != null && result.getStatus() == 201) {
+                searchManager.index(result);
+            }
+        }
+        return new ParkingResult(404, "", vehicleNumber, ticketId);
+    }
+
+    /**
+     * - returns 201 success, 404 : vehicle not found or any other error,
+     * - exactly one of spotId, vehicleNumber or ticketId will be non-empty
+     */
+    public int removeVehicle(String spotId, String vehicleNumber, String ticketId) {
+        // extracting floor, row, column of parking spot where vehicle is parked
+        //Integer []location=helper.getSpotLocation(spotId);
+        // int floor= location[0], row=location[1],column=location[2];
+        // write code below to unpark the vehicle
+        ParkingResult result = searchVehicle(spotId, vehicleNumber, ticketId);
+        if (result != null && result.getStatus() == 201) {
+            Integer[] location = helper.getSpotLocation(result.getSpotId());
+            ParkingSpot spot = this.floors[location[0]].getSpot(location[1], location[2]);
+            if (spot.removeVehicle()) {
+                searchManager.index(new ParkingResult(404, spot.getSpotId(), "", ""));
+                return 201;
+            }
+        }
+        // helper.print("vehicle removed");
+        // return 201;
+        return 404;
+    }
+
+    /**
+     * status = 200 : success, 404 : not found
+     * exactly one of spotId, vehicleNumber or ticketId will be non-empty
+     */
+    public ParkingResult searchVehicle(String spotId, String vehicleNumber, String ticketId) {
+        return searchManager.search(spotId, vehicleNumber, ticketId);
+//        return new ParkingResult(404, spotId, vehicleNumber, ticketId);
+    }
+
+    // floor is 0-index based, i.e.  0<=floor<parking.length
+    public int getFreeSpotsCount(int floor, int vehicleType) {
+        return floors[floor].getFreeSpots(vehicleType);
+    }
+}
+
+class ParkingResult {
+    private final int status;
+    private final String spotId;
+    private final String vehicleNumber;
+    private final String ticketId;
+
+    ParkingResult(int status, String spotId, String vehicleNumber, String ticketId) {
+        this.status = status;
+        this.spotId = spotId;
+        this.vehicleNumber = vehicleNumber;
+        this.ticketId = ticketId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public String getSpotId() {
+        return spotId;
+    }
+
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+}
+
+class Helper01 {
+    void print(String s) {
+        System.out.print(s);
+    }
+
+    void println(String s) {
+        print(s + "\n");
+    }
+
+    String getSpotId(int floor, int row, int column) {
+        return floor + "-" + row + "-" + column;
+    }
+
+    Integer[] getSpotLocation(String spotId) {
+        Integer[] location = {-1, -1, -1};
+        String[] ss = spotId.split("-");
+        for (int i = 0; i < 3 && i < ss.length; i++) {
+            location[i] = Integer.parseInt(ss[i]);
+        }
+        return location;
+    }
+}
+
+
+class SearchManager {
+    private final ConcurrentHashMap<String, ParkingResult> cache;
+
+    public SearchManager() {
+        this.cache = new ConcurrentHashMap<>();
+    }
+
+    public void index(ParkingResult parkingResult) {
+        if (!parkingResult.getSpotId().isBlank()) this.cache.put("s>" + parkingResult.getSpotId(), parkingResult);
+        if (!parkingResult.getVehicleNumber().isBlank())
+            this.cache.put("v>" + parkingResult.getVehicleNumber(), parkingResult);
+        if (!parkingResult.getTicketId().isBlank()) this.cache.put("t>" + parkingResult.getTicketId(), parkingResult);
+    }
+
+    public ParkingResult search(String spotId, String vehicleNumber, String ticketId) {
+        if (spotId != null && !spotId.isEmpty()) return this.cache.get("s>" + spotId);
+        if (vehicleNumber != null && !vehicleNumber.isEmpty()) return this.cache.get("v>" + vehicleNumber);
+        if (ticketId != null && !ticketId.isEmpty()) return this.cache.get("t>" + ticketId);
+        return null;
+    }
+}
+
+class ParkingSpot {
+    private final int type;
+    private final String spotId;
+    private final boolean parkable;
+    private String vehicleNumber;
+    private String ticketNumber;
+
+    public ParkingSpot(int type, String spotId, boolean parkable) {
+        this.type = type;
+        this.spotId = spotId;
+        this.parkable = parkable;
+        this.vehicleNumber = null;
+        this.ticketNumber = null;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public String getSpotId() {
+        return spotId;
+    }
+
+    public boolean isParkable() {
+        return parkable;
+    }
+
+    public boolean isEmpty() {
+        return vehicleNumber != null || ticketNumber != null;
+    }
+
+    public String getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public void setVehicleNumber(String vehicleNumber) {
+        this.vehicleNumber = vehicleNumber;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(String ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
+
+    public boolean setVehicle(String vehicleNumber, String ticketNumber) {
+        setTicketNumber(ticketNumber);
+        setVehicleNumber(vehicleNumber);
+        return true;
+    }
+
+    public boolean removeVehicle() {
+        return setVehicle(null, null);
+    }
+}
+
+
+public class ParkingFloor {
+    private final int floorNumber;
+    private final ParkingSpot[][] floor;
+    private final HashMap<Integer, ConcurrentLinkedDeque<ParkingSpot>> freeSpots;
+
+    public ParkingFloor(int floorNumber, String[][] parkingFloor) {
+        this.floorNumber = floorNumber;
+        this.freeSpots = new HashMap<>();
+        this.freeSpots.put(2, new ConcurrentLinkedDeque<>());
+        this.freeSpots.put(4, new ConcurrentLinkedDeque<>());
+
+        this.floor = new ParkingSpot[parkingFloor.length][parkingFloor[0].length];
+        for (int row = 0; row < parkingFloor.length; row++) {
+            for (int column = 0; column < parkingFloor[row].length; column++) {
+                int type = parkingFloor[row][column].charAt(0);
+                boolean parkable = parkingFloor[row][column].charAt(2) == '1';
+                String spotId = floorNumber + "-" + row + "-" + column;
+                this.floor[row][column] = new ParkingSpot(type, spotId, parkable);
+                this.freeSpots.get(type).add(this.floor[row][column]);
+            }
+        }
+    }
+
+    public int getFreeSpots(int type) {
+        return freeSpots.get(type).size();
+    }
+
+    public ParkingResult park(int type, String vehicleNumber, String ticketNumber) {
+        ParkingSpot freeSpot = this.freeSpots.get(type).poll();
+        if (freeSpot != null)
+            if (freeSpot.setVehicle(vehicleNumber, ticketNumber))
+                return new ParkingResult(201, freeSpot.getSpotId(), vehicleNumber, ticketNumber);
+        return new ParkingResult(404, null, vehicleNumber, ticketNumber);
+    }
+
+    public int remove(ParkingSpot spot) {
+        if (!spot.isEmpty() && spot.removeVehicle()) {
+            freeSpots.get(spot.getType()).add(spot);
+            return 201;
+        }
+        return 404;
+    }
+
+    public ParkingSpot getSpot(int row, int column) {
+        return floor[row][column];
+    }
+
+    public int getFloorNumber() {
+        return floorNumber;
+    }
+}

@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class ParkingLot {
     private HashMap<String, Slot> parking;
 
-    public ParkingLot(String parking[][][], Helper01 helper) {
+    public ParkingLot(String[][][] parking, Helper01 helper) {
         // Helper01 helper = new Helper01();
         for (int floor = 0; floor < parking.length; floor++) {
             for (int row = 0; row < parking[floor].length; row++) {
@@ -78,14 +78,14 @@ public class ParkingLot {
 
     public Slot searchVehicleByVehicleNumber(String vehicleNumber, Helper01 helper) {
         for (Slot slot : parking.values()) {
-            if(slot.getParked() != null && slot.getParked().getVehicleNumber().equals(vehicleNumber)) return slot;
+            if(slot.getParked() != null && slot.getParked().vehicleNumber().equals(vehicleNumber)) return slot;
         }
         return null;
     }
 
     public Slot searchVehicleByTicketNumber(String ticketId, Helper01 helper) {
         for (Slot slot : parking.values()) {
-            if(slot.getParked() != null && slot.getParked().getTicketNumber().equals(ticketId)) return slot;
+            if(slot.getParked() != null && slot.getParked().ticketNumber().equals(ticketId)) return slot;
         }
         return null;
     }

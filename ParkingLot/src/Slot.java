@@ -1,7 +1,7 @@
 public class Slot {
-    private String slotId;
-    private boolean parkalbe;
-    private int vehicleType;
+    private final String slotId;
+    private final boolean parkalbe;
+    private final int vehicleType;
     private Ticket parked;
     
     public Slot(String slotId, boolean parkalbe, int vehicleType, Ticket parked) {

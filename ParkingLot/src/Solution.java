@@ -1,9 +1,6 @@
 
 // ****** It's better to write code in your local code editor and paste it back here *********
 
-import java.util.*;
-
-import javafx.scene.effect.Light.Spot;
 public class Solution implements Q001ParkingLotInterface {
     private Helper01 helper;
     private String[][][] parking;
@@ -83,7 +80,7 @@ public class Solution implements Q001ParkingLotInterface {
         if(spot == null) 
             return new ParkingResult(404, spotId, vehicleNumber, ticketId);
         else
-            return new ParkingResult(200, spot.getSlotId(), spot.getParked().getVehicleNumber(), spot.getParked().getTicketNumber());
+            return new ParkingResult(200, spot.getSlotId(), spot.getParked().vehicleNumber(), spot.getParked().ticketNumber());
     }
 
     // floor is 0-index based, i.e.  0<=floor<parking.length
