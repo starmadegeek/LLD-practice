@@ -1,6 +1,6 @@
 public class Board {
     int dimension;
-    Player board[][];
+    Player[][] board;
     
     public Board(int n){
         this.dimension = n;
@@ -20,8 +20,7 @@ public class Board {
         if(checkRow(position.getX(), player)) return true;
         if(checkColumn(position.getY(), player)) return true;
         if(position.isDiagonal() && checkDiagonals(player)) return true;
-        if(position.isCrossDiagonal(dimension) && checkCrossDiagonals(player)) return true;
-        return false;
+        return position.isCrossDiagonal(dimension) && checkCrossDiagonals(player);
     }
 
     private boolean checkRow(int x, Player checkPlayer){
@@ -60,10 +59,10 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        for(int i=0; i<board.length; i++){
-            for(int j=0; j<board[i].length; j++){
-                String player = board[i][j] == null ? "X" : board[i][j].toString();
-                res.append(player + " | ");
+        for (Player[] players : board) {
+            for (Player value : players) {
+                String player = value == null ? "X" : value.toString();
+                res.append(player).append(" | ");
             }
             res.append("\n");
         }

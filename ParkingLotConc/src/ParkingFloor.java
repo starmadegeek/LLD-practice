@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -63,10 +62,6 @@ public class ParkingFloor {
 
     public ParkingSpot getSpot(int row, int column) {
         return floor[row][column];
-    }
-
-    public int getFloorNumber() {
-        return floorNumber;
     }
 
     @Override

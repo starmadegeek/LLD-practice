@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Game {
     Board board;
-    Player players[];
+    Player[] players;
     Status status;
 
     public Game(Board board, Player players[]) {

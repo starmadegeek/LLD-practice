@@ -22,7 +22,7 @@ public class ParkingLotImpl implements ParkingLot {
             this.floors[i] = new ParkingFloor(i, parking[i]);
         }
         this.searchManager = new SearchManager();
-         helper.println("parking lot initialized");
+        helper.println("parking lot initialized");
     }
 
     /**
@@ -33,16 +33,16 @@ public class ParkingLotImpl implements ParkingLot {
     public ParkingResult park(int vehicleType, String vehicleNumber, String ticketId) {
         // use spotId = helper.getSpotId(floor, row, column); to build spotId
         // or just do spotId = ""+floor+"-"+row+"-"+column
-        if((vehicleType != 2 && vehicleType != 4) || vehicleNumber.isBlank() || ticketId.isBlank())
+        if ((vehicleType != 2 && vehicleType != 4) || vehicleNumber.isBlank() || ticketId.isBlank())
             return new ParkingResult(404, "", vehicleNumber, ticketId);
-        for(ParkingFloor floor: floors){
+        for (ParkingFloor floor : floors) {
             ParkingResult result = floor.park(vehicleType, vehicleNumber, ticketId);
-            if(result != null && result.getStatus() == 201){
+            if (result != null && result.getStatus() == 201) {
                 searchManager.index(result);
                 return result;
             }
         }
-         return new ParkingResult(404, "", vehicleNumber, ticketId);
+        return new ParkingResult(404, "", vehicleNumber, ticketId);
     }
 
     /**
@@ -56,15 +56,17 @@ public class ParkingLotImpl implements ParkingLot {
         // int floor= location[0], row=location[1],column=location[2];
         // write code below to unpark the vehicle
         ParkingResult result = searchVehicle(spotId, vehicleNumber, ticketId);
-        if(result != null && result.getStatus() == 201){
+        if (result != null && result.getStatus() == 201) {
             Integer[] location = helper.getSpotLocation(result.getSpotId());
             ParkingSpot spot = this.floors[location[0]].getSpot(location[1], location[2]);
-            if(this.floors[location[0]].remove(spot)){
+            if (this.floors[location[0]].remove(spot)) {
                 searchManager.index(new ParkingResult(404, spot.getSpotId(), "", ""));
+                helper.print("vehicle removed");
                 return 201;
-            };
+            }
+            ;
         }
-         helper.print("vehicle removed");
+        helper.println("Error in vehicle remove");
         return 404;
     }
 
