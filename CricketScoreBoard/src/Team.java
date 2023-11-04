@@ -1,17 +1,8 @@
 import java.util.List;
 
-public class Team {
-    List<Player> battingOrder;
+public record Team(String teamName, List<Player> battingOrder) {
 
-    public Team(List<Player> battingOrder) {
-        this.battingOrder = battingOrder;
-    }
-
-    public int getNumberOfPlayers(){
+    public int getNumberOfPlayers() {
         return battingOrder.size();
-    }
-
-    public List<Player> getBattingOrder() {
-        return battingOrder;
     }
 }

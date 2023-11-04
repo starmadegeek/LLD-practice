@@ -1,16 +1,7 @@
-public class Player {
-    String name;
-
-    public Player(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+public record Player(String name) {
 
     @Override
     public String toString() {
-        return getName();
+        return name();
     }
 }

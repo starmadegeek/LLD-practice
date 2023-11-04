@@ -1,8 +1,8 @@
 public class PlayerScoreCard {
-    final Player player;
-    int score;
-    int fours, sixes;
-    int ballFaced;
+    private final Player player;
+    private int score;
+    private int fours, sixes;
+    private int ballFaced;
 
     public PlayerScoreCard(Player player) {
         this.player = player;
@@ -10,6 +10,15 @@ public class PlayerScoreCard {
         this.fours = 0;
         this.sixes = 0;
         this.ballFaced = 0;
+    }
+
+    public void playBall(Ball ball) {
+        if (ball.getBallType() == BallType.FOUR) fours++;
+        else if (ball.getBallType() == BallType.SIX) sixes++;
+        else if (ball.getBallType() == BallType.NOBALL || ball.getBallType() == BallType.WIDE) ballFaced--;
+
+        score += ball.getRuns();
+        ballFaced++;
     }
 
     public Player getPlayer() {
