@@ -1,3 +1,3 @@
 public enum BallType {
-    RUN, FOUR, SIX, WIDE, WICKET, NOBALL, LEGBYES
+    DOT, RUN, FOUR, SIX, WIDE, WICKET, NOBALL, LEGBYES
 }

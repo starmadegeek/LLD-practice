@@ -1,11 +1,12 @@
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Innings {
-    private final Team team;
+    private final Team battingTeam;
+    private final Team bowlingTeam;
     private final int type;
     private final Queue<Player> battingQueue;
-    private final HashMap<Player, PlayerScoreCard> playerPlayerScoreCards;
+    private final HashMap<Player, BatsmanScoreCard> batsmenScoreCards;
+    private final HashMap<Player, BowlerScoreCard> bowlerScoreCards;
     private int totalRuns;
     private final int totalOvers;
     private final int target;
@@ -16,21 +17,27 @@ public class Innings {
     private int nobes;
     private int legs;
     private final ArrayList<Over> overs;
-    private Batters batters;
+    private Batsmen batsmen;
 
-    public Innings(Team team, int totalOvers, int target) {
-        this.team = team;
+    public Innings(Team battingTeam, Team bowlingTeam, int totalOvers, int target) {
+        this.battingTeam = battingTeam;
+        this.bowlingTeam = bowlingTeam;
         this.totalOvers = totalOvers;
         this.overs = new ArrayList<>(totalOvers);
         // for (int i = 0; i < totalOvers; i++) this.overs.add(new Over());
         if (target > -1) this.type = 1;
         else this.type = 0;
+
         this.battingQueue = new LinkedList<>();
-        playerPlayerScoreCards = new HashMap<>();
-        for (Player player : team.battingOrder()) {
-            playerPlayerScoreCards.put(player, new PlayerScoreCard(player));
+
+        batsmenScoreCards = new HashMap<>();
+        for (Player player : battingTeam.players()) {
+            batsmenScoreCards.put(player, new BatsmanScoreCard(player));
             battingQueue.add(player);
         }
+
+        bowlerScoreCards = new HashMap<>();
+
         totalRuns = 0;
         this.target = target;
         fours = 0;
@@ -41,35 +48,43 @@ public class Innings {
         legs = 0;
     }
 
-    public Innings(Team team, int overs) {
-        this(team, overs, -1);
+    public Innings(Team battingTeam, Team bowlingTeam, int overs) {
+        this(battingTeam, bowlingTeam, overs, -1);
     }
 
-    public void start() throws FileNotFoundException {
-        System.out.println("Team batting: " + team.teamName() + "\n");
+    public void start() {
+        System.out.println("Team batting: " + battingTeam.teamName() + "\n");
         Scanner scanner = SharedScanner.getInstance();
-        this.batters = new Batters(this.playerPlayerScoreCards.get(battingQueue.remove()), this.playerPlayerScoreCards.get(battingQueue.remove()));
+        this.batsmen = new Batsmen(this.batsmenScoreCards.get(battingQueue.remove()), this.batsmenScoreCards.get(battingQueue.remove()));
         for (int i = 1; i <= this.totalOvers; i++) {
             System.out.println("Over: " + (i) + "\n");
-            overs.add(new Over());
+            Over over = new Over();
+            overs.add(over);
             for (int j = 1; j <= 6; j++) {
-                String ballString = scanner.nextLine();
-                Ball ball = overs.get(i-1).setCurrentBall(ballString, batters.getStriker().getPlayer(), null);
+                String input = scanner.nextLine();
+                String bowlerName = input.split("-")[0];
+                String ballString = input.split("-")[1];
+                Player bowler = bowlingTeam.getPlayerByName(bowlerName);
+                Ball ball = over.setCurrentBall(ballString, batsmen.getStriker().getBatsman(), bowler);
+
                 System.out.println(ball);
 
-                batters.getStriker().playBall(ball);
+                batsmen.getStriker().playBall(ball);
+
+                if (!bowlerScoreCards.containsKey(bowler)) bowlerScoreCards.put(bowler, new BowlerScoreCard(bowler));
+                bowlerScoreCards.get(bowler).playBall(ball);
 
                 // WICKET
                 if (ball.getBallType() == BallType.WICKET) {
                     wickets++;
-                    batters.setStriker(null);
+                    batsmen.setStriker(null);
                     if (battingQueue.isEmpty()) return;
-                    batters.setStriker(playerPlayerScoreCards.get(battingQueue.remove()));
+                    batsmen.setStriker(batsmenScoreCards.get(battingQueue.remove()));
                 }
 
 
                 // RUNS - strike rotates
-                if ((ball.getRuns() & 1) == 1) batters.rotateStike();
+                if ((ball.getRuns() & 1) == 1) batsmen.rotateStrike();
 
                 // Wide or Noball
                 if (ball.getBallType() == BallType.NOBALL) {
@@ -89,9 +104,11 @@ public class Innings {
                 totalRuns += ball.getTotalRuns();
                 if (type == 1 && totalRuns > target) return;
             }
-            batters.rotateStike();
+            batsmen.rotateStrike();
+            if (over.isMaiden())
+                bowlerScoreCards.get(over.getBowlers().iterator().next()).addMaiden();
 
-            printScoreCard(i);
+            printBattingScoreCard(i, overs.get(i - 1).getOverSummary());
         }
     }
 
@@ -100,41 +117,64 @@ public class Innings {
     }
 
     public int getWicketsRemaining() {
-        return team.getNumberOfPlayers() - wickets - 1;
+        return battingTeam.getNumberOfPlayers() - wickets - 1;
     }
 
-    public void printScoreCard(int over) {
+    public void printBattingScoreCard(int over, String overSummary) {
         StringBuilder res = new StringBuilder();
-        res.append("Scorecard for Team ").append(team.teamName()).append(" after ").append(over).append(" overs:\n");
+        res.append("\nScorecard for Team ").append(battingTeam.teamName()).append(" after ").append(over).append(" overs:\n");
         res.append("Total score: ").append(getFinalScore()).append("-").append(getWickets()).append("\n");
         res.append("Overs played: ").append(over).append("\n");
-        res.append("Player | Name | Score | 4s | 6s | Balls\n");
-        for (PlayerScoreCard player : Arrays.asList(batters.getStriker(), batters.getNonStriker())) {
-            res.append(player.getPlayer().name());
-            if(batters.getStriker().equals(player)) res.append("*");
+        res.append(overSummary).append("\n");
+        res.append("Batsman | Score | 4s | 6s | Balls | StrikeRate\n");
+        for (BatsmanScoreCard batsman : Arrays.asList(batsmen.getStriker(), batsmen.getNonStriker())) {
+            res.append(batsman.getBatsman().name());
+            if (batsmen.getStriker().equals(batsman)) res.append("*");
             res.append(" | ");
-            res.append(player.getScore()).append(" | ");
-            res.append(player.getFours()).append(" | ");
-            res.append(player.getSixes()).append(" | ");
-            res.append(player.getBallFaced()).append(" \n");
+            res.append(batsman.getScore()).append(" | ");
+            res.append(batsman.getFours()).append(" | ");
+            res.append(batsman.getSixes()).append(" | ");
+            res.append(String.format("%.2f", batsman.getStrikeRate())).append(" | ");
+            res.append(batsman.getBallFaced()).append(" \n");
         }
         System.out.println(res);
     }
 
-    public String getTotalScoreCard() {
+    public String getTotalBattingScoreCard() {
         StringBuilder res = new StringBuilder();
-        res.append("Scorecard for Team ").append(team.teamName()).append(":\n");
+        res.append("Batting Scorecard for Team ").append(battingTeam.teamName()).append(":\n");
         res.append("Total score: ").append(getFinalScore()).append("-").append(getWickets()).append("\n");
         res.append("Overs played: ").append(getOversPlayed()).append("\n");
-        res.append("Player | Name | Score | 4s | 6s | Balls\n");
-        for (PlayerScoreCard player : this.playerPlayerScoreCards.values()) {
-            res.append(player.getPlayer().name());
-            if (batters.isBatter(player)) res.append("*");
+        res.append("Extras: ").append(getExtras()).append("\n");
+        res.append("Batsman | Score | Balls | 4s | 6s | StrikeRate\n");
+        for (BatsmanScoreCard batsman : this.batsmenScoreCards.values()) {
+            res.append(batsman.getBatsman().name());
+            if (batsmen.isBatter(batsman)) res.append("*");
             res.append(" | ");
-            res.append(player.getScore()).append(" | ");
-            res.append(player.getFours()).append(" | ");
-            res.append(player.getSixes()).append(" | ");
-            res.append(player.getBallFaced()).append(" \n");
+            res.append(batsman.getScore()).append(" | ");
+            res.append(batsman.getBallFaced()).append(" | ");
+            res.append(batsman.getFours()).append(" | ");
+            res.append(batsman.getSixes()).append(" | ");
+            res.append(String.format("%.2f", batsman.getStrikeRate())).append(" \n");
+        }
+        res.append("Yet to bat: ").append(battingQueue.toString()).append("\n");
+        return res.toString();
+    }
+
+    public String getTotalBowlingScoreCard() {
+        StringBuilder res = new StringBuilder();
+        res.append("Bowling Scorecard for Team ").append(battingTeam.teamName()).append(":\n");
+        res.append("Bowler | Overs | Maidens | Runs | Wickets | 4s | 6s | Extras | ER\n");
+        for (BowlerScoreCard bowler : this.bowlerScoreCards.values()) {
+            res.append(bowler.getBowler().name()).append(" | ");
+            res.append(bowler.getOversBowled()).append(" | ");
+            res.append(bowler.getMaidens()).append(" | ");
+            res.append(bowler.getRunsConceded()).append(" | ");
+            res.append(bowler.getWicketsTaken()).append(" | ");
+            res.append(bowler.getFoursConceded()).append(" | ");
+            res.append(bowler.getSixesConceded()).append(" | ");
+            res.append(bowler.getExtras()).append(" | ");
+            res.append(String.format("%.2f", bowler.getEconomy())).append(" \n");
         }
         return res.toString();
     }
@@ -142,8 +182,8 @@ public class Innings {
     private String getOversPlayed() {
         int oversPlayed = overs.size() - 1;
         int currentBall = overs.get(oversPlayed).getCurrentBall();
-        oversPlayed += currentBall/6;
-        currentBall = currentBall%6;
+        oversPlayed += currentBall / 6;
+        currentBall = currentBall % 6;
         return oversPlayed + "." + currentBall;
     }
 

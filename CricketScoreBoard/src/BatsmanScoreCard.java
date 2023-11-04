@@ -1,11 +1,11 @@
-public class PlayerScoreCard {
-    private final Player player;
+public class BatsmanScoreCard {
+    private final Player batsman;
     private int score;
     private int fours, sixes;
     private int ballFaced;
 
-    public PlayerScoreCard(Player player) {
-        this.player = player;
+    public BatsmanScoreCard(Player batsman) {
+        this.batsman = batsman;
         this.score = 0;
         this.fours = 0;
         this.sixes = 0;
@@ -21,12 +21,16 @@ public class PlayerScoreCard {
         ballFaced++;
     }
 
-    public Player getPlayer() {
-        return player;
+    public Player getBatsman() {
+        return batsman;
     }
 
     public int getScore() {
         return score;
+    }
+
+    public double getStrikeRate() {
+        return score * 100.0 / ballFaced;
     }
 
     public void setScore(int score) {

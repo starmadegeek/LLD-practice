@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Hello, I'm Cricket ScoreBoard!");
-        System.out.println("Interactive or file bases (1|2)? ");
+        System.out.println("Interactive or file based (1|2)? ");
         Scanner initScanner = new Scanner(System.in);
 
         if(initScanner.nextInt() == 2) {

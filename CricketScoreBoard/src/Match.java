@@ -1,5 +1,3 @@
-import java.io.FileNotFoundException;
-
 public class Match {
     private final Team teamA, teamB;
     private final int overs;
@@ -33,26 +31,29 @@ public class Match {
         return gameStatus;
     }
 
-    public void start() throws FileNotFoundException {
+    public void start() {
 
         this.gameStatus = GameStatus.FIRST_INNINGS_IN_PROGRESS;
-        Innings teamAInnings = new Innings(teamA, overs);
+        Innings teamAInnings = new Innings(teamA, teamB, overs);
         teamAInnings.start();
-        System.out.println(teamAInnings.getTotalScoreCard());
+        System.out.println(teamAInnings.getTotalBattingScoreCard());
+        System.out.println(teamAInnings.getTotalBowlingScoreCard());
 
         this.gameStatus = GameStatus.SECOND_INNINGS_IN_PROGRESS;
         System.out.println("Team " + teamB.teamName() + " needs " + (teamAInnings.getFinalScore()+1) + " runs to win.");
-        Innings teamBInnings = new Innings(teamB, overs, teamAInnings.getFinalScore());
+        Innings teamBInnings = new Innings(teamB, teamA, overs, teamAInnings.getFinalScore());
         teamBInnings.start();
 
-        System.out.println(teamBInnings.getTotalScoreCard());
+        System.out.println(teamBInnings.getTotalBattingScoreCard());
+        System.out.println(teamBInnings.getTotalBowlingScoreCard());
+
         this.gameStatus = GameStatus.FINISHED;
 
         if(teamBInnings.getFinalScore() > teamAInnings.getFinalScore()){
-            result = "Result: Team 2 won the match by " + teamBInnings.getWicketsRemaining() + " wickets";
+            result = "Result: Team " + teamB.teamName() + " won the match by " + teamBInnings.getWicketsRemaining() + " wickets";
         } else if (teamBInnings.getFinalScore() == teamAInnings.getFinalScore()) {
             result = "Result: Game is drawn due to tie";
         }
-        else result = "Result: Team 1 won the match by " + (teamAInnings.getFinalScore()  - teamBInnings.getFinalScore()) + " runs";
+        else result = "Result: Team " + teamA.teamName() + " won the match by " + (teamAInnings.getFinalScore()  - teamBInnings.getFinalScore()) + " runs";
     }
 }
