@@ -3,11 +3,13 @@ public class Match {
     private final int overs;
     private String result;
     private GameStatus gameStatus;
+    private final Team tossWinner;
 
-    public Match(Team teamA, Team teamB, int overs) {
+    public Match(Team teamA, Team teamB, int overs, Team tossWinner) {
         this.teamA = teamA;
         this.teamB = teamB;
         this.overs = overs;
+        this.tossWinner = tossWinner;
         this.gameStatus = GameStatus.NOT_STARTED;
     }
 
@@ -31,8 +33,11 @@ public class Match {
         return gameStatus;
     }
 
-    public void start() {
+    public Team getTossWinner() {
+        return tossWinner;
+    }
 
+    public void start() {
         this.gameStatus = GameStatus.FIRST_INNINGS_IN_PROGRESS;
         Innings teamAInnings = new Innings(teamA, teamB, overs);
         teamAInnings.start();

@@ -61,9 +61,9 @@ public class Innings {
             Over over = new Over();
             overs.add(over);
             for (int j = 1; j <= 6; j++) {
-                String input = scanner.nextLine();
-                String bowlerName = input.split("-")[0];
-                String ballString = input.split("-")[1];
+                String[] input = scanner.nextLine().split("-");
+                String bowlerName = input[0];
+                String ballString = input[1];
                 Player bowler = bowlingTeam.getPlayerByName(bowlerName);
                 Ball ball = over.setCurrentBall(ballString, batsmen.getStriker().getBatsman(), bowler);
 
@@ -134,8 +134,8 @@ public class Innings {
             res.append(batsman.getScore()).append(" | ");
             res.append(batsman.getFours()).append(" | ");
             res.append(batsman.getSixes()).append(" | ");
-            res.append(String.format("%.2f", batsman.getStrikeRate())).append(" | ");
-            res.append(batsman.getBallFaced()).append(" \n");
+            res.append(batsman.getBallFaced()).append(" | ");
+            res.append(String.format("%.2f", batsman.getStrikeRate())).append(" \n");
         }
         System.out.println(res);
     }
