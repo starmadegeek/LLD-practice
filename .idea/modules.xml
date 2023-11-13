@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CricketScoreBoard/CricketScoreBoard.iml" filepath="$PROJECT_DIR$/CricketScoreBoard/CricketScoreBoard.iml" />
       <module fileurl="file://$PROJECT_DIR$/ECommerce/ECommerce.iml" filepath="$PROJECT_DIR$/ECommerce/ECommerce.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Game2048/Game2048.iml" filepath="$PROJECT_DIR$/Game2048/Game2048.iml" />
       <module fileurl="file://$PROJECT_DIR$/ParkingLot/ParkingLot.iml" filepath="$PROJECT_DIR$/ParkingLot/ParkingLot.iml" />
       <module fileurl="file://$PROJECT_DIR$/ParkingLotConc/ParkingLotConc.iml" filepath="$PROJECT_DIR$/ParkingLotConc/ParkingLotConc.iml" />
       <module fileurl="file://$PROJECT_DIR$/SnakesAndLadders/SnakesAndLadders.iml" filepath="$PROJECT_DIR$/SnakesAndLadders/SnakesAndLadders.iml" />
