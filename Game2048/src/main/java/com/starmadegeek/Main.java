@@ -1,6 +1,7 @@
 package com.starmadegeek;
 
 import com.starmadegeek.Entities.Board;
+import com.starmadegeek.Entities.My2048Game;
 import com.starmadegeek.Entities.Tile;
 
 public class Main {

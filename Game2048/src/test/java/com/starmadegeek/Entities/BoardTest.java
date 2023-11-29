@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class BoardTest {
 
-    
-
     @Test
     void simplifyList() {
         List<Tile> tiles = new ArrayList<>();
@@ -26,7 +24,7 @@ class BoardTest {
 
         Board board = new Board();
         List<Tile> result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(4), new Tile(4), new Tile(4), new Tile(4) ), result);
 
         tiles = new ArrayList<>();
@@ -38,7 +36,7 @@ class BoardTest {
         tiles.add(new Tile(2));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(4), new Tile(4), new Tile(4) ), result);
 
         tiles = new ArrayList<>();
@@ -50,7 +48,7 @@ class BoardTest {
         tiles.add(new Tile(4));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(4), new Tile(4), new Tile(2), new Tile(4) ), result);
 
         tiles = new ArrayList<>();
@@ -60,7 +58,7 @@ class BoardTest {
         tiles.add(new Tile(2));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(8), new Tile(4), new Tile(4) ), result);
 
         tiles = new ArrayList<>();
@@ -70,7 +68,7 @@ class BoardTest {
         tiles.add(new Tile(8));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(4), new Tile(4), new Tile(8) ), result);
 
         tiles = new ArrayList<>();
@@ -81,7 +79,7 @@ class BoardTest {
         tiles.add(new Tile(8));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(2), new Tile(8), new Tile(16)), result);
 
         tiles = new ArrayList<>();
@@ -92,7 +90,7 @@ class BoardTest {
         tiles.add(new Tile(2));
 
         result = board.simplifyList(tiles);
-        System.out.println(result);
+        // System.out.println(result);
         assertEquals(Arrays.asList(new Tile(16), new Tile(8), new Tile(2)), result);
     }
 
@@ -369,5 +367,129 @@ class BoardTest {
         assertEquals(2, board.getTile(0, 1).getValue());
         assertEquals(4, board.getTile(0, 2).getValue());
         assertEquals(4, board.getTile(0, 3).getValue());
+    }
+
+    @Test
+    public void moveRightFalsy(){
+        Board board = new Board(new Tile[][]{
+                {null, null, null, new Tile(4)},
+                {null, new Tile(2), new Tile(4), new Tile(2)},
+                {null, new Tile(32), new Tile(8), new Tile(4)},
+                {new Tile(16), new Tile(64), new Tile(32), new Tile(8)}
+        });
+
+        assertFalse(board.moveRight());
+    }
+
+    @Test
+    public void moveLeftFalsy(){
+        Board board = new Board(new Tile[][]{
+                {new Tile(4), null, null, null},
+                {new Tile(2), new Tile(4), new Tile(2), null},
+                {new Tile(32), new Tile(8), new Tile(4), null},
+                {new Tile(16), new Tile(64), new Tile(32), new Tile(8)}
+        });
+
+        assertFalse(board.moveLeft());
+    }
+
+    @Test
+    public void moveUpFalsy(){
+        Board board = new Board(new Tile[][]{
+                {new Tile(16), new Tile(64), new Tile(32), new Tile(8)},
+                {new Tile(32), new Tile(8), new Tile(4), null},
+                {new Tile(2), new Tile(4), new Tile(2), null},
+                {new Tile(4), null, null, null}
+        });
+
+        assertFalse(board.moveUp());
+    }
+
+    @Test
+    public void moveDownFalsy(){
+        Board board = new Board(new Tile[][]{
+                {new Tile(4), null, null, null},
+                {new Tile(2), new Tile(4), new Tile(2), null},
+                {new Tile(32), new Tile(8), new Tile(4), null},
+                {new Tile(16), new Tile(64), new Tile(32), new Tile(8)}
+        });
+
+        assertFalse(board.moveDown());
+    }
+
+    @Test
+    public void moveAllTruthy(){
+        Tile[][] testBoard = new Tile[][]{
+                {null, null, null, null},
+                {null, new Tile(2), null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+        };
+
+        assertTrue(new Board(testBoard).moveUp());
+        assertTrue(new Board(testBoard).moveDown());
+        assertTrue(new Board(testBoard).moveLeft());
+        assertTrue(new Board(testBoard).moveRight());
+    }
+
+    @Test
+    public void moveAllFalsy(){
+        Tile[][] testBoard = new Tile[][]{
+                {new Tile(2), new Tile(4)},
+                {new Tile(16), new Tile(8)},
+        };
+
+        assertFalse(new Board(testBoard).moveUp());
+        assertFalse(new Board(testBoard).moveDown());
+        assertFalse(new Board(testBoard).moveLeft());
+        assertFalse(new Board(testBoard).moveRight());
+    }
+
+    @Test
+    public void moveUpGameSolved() {
+        Tile[][] testBoard = new Tile[][]{
+                {new Tile(1024), new Tile(1024)},
+                {new Tile(1024), new Tile(1024)},
+        };
+
+        Board board = new Board(testBoard);
+        board.moveUp();
+        assertTrue(board.isSolved());
+    }
+
+    @Test
+    public void moveDownGameSolved() {
+        Tile[][] testBoard = new Tile[][]{
+                {new Tile(1024), new Tile(1024)},
+                {new Tile(1024), new Tile(1024)},
+        };
+
+        Board board = new Board(testBoard);
+        board.moveDown();
+        assertTrue(board.isSolved());
+    }
+
+    @Test
+    public void moveLeftGameSolved() {
+        Tile[][] testBoard = new Tile[][]{
+                {new Tile(1024), new Tile(1024)},
+                {new Tile(1024), new Tile(1024)},
+        };
+
+        Board board = new Board(testBoard);
+        board.moveLeft();
+        assertTrue(board.isSolved());
+    }
+
+    @Test
+    public void moveRightGameSolved() {
+        Tile[][] testBoard = new Tile[][]{
+                {new Tile(1024), new Tile(1024)},
+                {new Tile(1024), new Tile(1024)},
+        };
+
+        Board board = new Board(testBoard);
+        board.moveRight();
+        assertTrue(board.isSolved());
     }
 }
