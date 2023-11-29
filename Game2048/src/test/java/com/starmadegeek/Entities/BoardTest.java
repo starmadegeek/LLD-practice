@@ -8,6 +8,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author starmadegeek
+ */
 class BoardTest {
 
     @Test

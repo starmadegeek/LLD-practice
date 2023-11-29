@@ -2,6 +2,10 @@ package com.starmadegeek.Entities;
 
 import java.util.*;
 
+/**
+ * @author starmadegeek
+ */
+
 public class Board {
     private final Tile[][] board;
     private final int dimension;

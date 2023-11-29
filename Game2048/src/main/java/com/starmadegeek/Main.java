@@ -4,6 +4,9 @@ import com.starmadegeek.Entities.Board;
 import com.starmadegeek.Entities.My2048Game;
 import com.starmadegeek.Entities.Tile;
 
+/**
+ * @author starmadegeek
+ */
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, I'm 2048 game!");

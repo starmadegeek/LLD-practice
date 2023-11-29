@@ -1,5 +1,8 @@
 package com.starmadegeek.Entities;
 
+/**
+ * @author starmadegeek
+ */
 public class Tile {
     private int value;
 

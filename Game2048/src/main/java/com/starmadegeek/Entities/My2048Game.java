@@ -2,6 +2,9 @@ package com.starmadegeek.Entities;
 
 import java.util.Scanner;
 
+/**
+ * @author starmadegeek
+ */
 public class My2048Game {
     private final Board board;
     private GameStatus gameStatus;
